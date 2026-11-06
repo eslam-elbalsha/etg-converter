@@ -119,13 +119,26 @@ footer{text-align:center;color:var(--mu);font-size:14px;padding:30px 0 40px;bord
 
 <footer class="wrap">© 2026 Eslam Elbalsha. جميع الحقوق محفوظة.<br>يعتمد البرنامج على FFmpeg وLibreOffice وPillow وPyMuPDF.</footer>
 <script>
-const DOWNLOAD_URL = "https://linkjust.com/ZJrTYHrsWGi";
+const DOWNLOAD_URL = "https://linkjust.com/ZJrTYHrsWGi";   // used until version.json is loaded
 (function(){
-  var a=[document.getElementById("dl"),document.getElementById("dl2")];
-  a.forEach(function(el){
-    if(DOWNLOAD_URL){el.href=DOWNLOAD_URL;el.target="_blank";el.rel="noopener";}
-    else{el.classList.add("off");el.textContent="رابط التحميل قريباً";}
-  });
+  var btns=[document.getElementById("dl"),document.getElementById("dl2")];
+  function setLink(url){
+    btns.forEach(function(el){
+      if(url){el.href=url;el.target="_blank";el.rel="noopener";el.classList.remove("off");el.textContent="⬇ تحميل البرنامج";}
+      else{el.classList.add("off");el.textContent="رابط التحميل قريباً";}
+    });
+  }
+  setLink(DOWNLOAD_URL);
+  // version.json (same folder) is the single place you edit when you release an update:
+  // the page shows the latest version and its download link, and the app uses the same file to notify users.
+  fetch("version.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(v){
+    if(!v) return;
+    if(v.download_url && /^https?:\/\//i.test(v.download_url)) setLink(v.download_url);
+    if(v.version){
+      var n=document.getElementById("dlnote");
+      if(n) n.textContent="الإصدار "+String(v.version).slice(0,20)+" · "+n.textContent;
+    }
+  }).catch(function(){});
 })();
 </script>
 </body>
